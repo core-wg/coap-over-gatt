@@ -1,6 +1,7 @@
 ---
 title: "CoAP over GATT (Bluetooth Low Energy Generic Attributes)"
-docname: draft-amsuess-core-coap-over-gatt
+docname: draft-amsuess-core-coap-over-gatt-latest
+ipr: trust200902
 stand_alone: true
 cat: exp
 wg: CoRE
@@ -15,10 +16,26 @@ normative:
   RFC7595:
 informative:
   RFC7668:
-  webbluetooth: https://webbluetoothcg.github.io/web-bluetooth/
+  webbluetooth:
+    title: Web Bluetooth
+    author:
+      -
+        ins: R. Grant
+      -
+        ins: O. Ruiz-Henríquez
+    date: 2020-02-24
+    format:
+      HTML: https://webbluetoothcg.github.io/web-bluetooth/
   RFC8323:
   RFC8613:
   RFC7959:
+  RFC7668:
+  bluetooth52:
+    title: Bluetooth Core Specification v5.2
+    date: 2019-12-31
+    format:
+      PDF: https://www.bluetooth.org/docman/handlers/downloaddoc.ashx?doc_id=480376
+
 
 
 --- abstract
@@ -38,7 +55,7 @@ for example UDP on 6LoWPAN networks.
 Not all those network technologies are available at end user devices in the vicinity of the constrained devices,
 which inhibits direct communication and necessitates the use of gateway devices or cloud services.
 In particular, 6LoWPAN is not available at all in typical end user devices,
-and while 6LoWPAN-over-BLE (IPSP, the Internet Protocol Support Profile of Bluetooth Low Energy (BLE), {{RFC7886}}) might be compatible from a radio point of view,
+and while 6LoWPAN-over-BLE (IPSP, the Internet Protocol Support Profile of Bluetooth Low Energy (BLE), {{RFC7668}}) might be compatible from a radio point of view,
 many operating systems or platforms lack support for it,
 especially in a user-accessible way.
 
@@ -127,7 +144,7 @@ Once the client writes a new request to a UC characteristic,
 any later reads pertain to that request,
 and any observation previously established is cancelled implicitly.
 
-Attribute values are limited to 512 Bytes ({{bluetooth51}} Part F Section 3.2.9),
+Attribute values are limited to 512 Bytes ({{bluetooth52}} Part F Section 3.2.9),
 practically limiting blockwise operation ({{RFC7959}}) to size exponents to 4 (resulting in a block size of 256 byte).
 Even smaller messages might enhance the transfer efficiency
 when they avoid fragmentation at the L2CAP level.
