@@ -2,9 +2,8 @@
 
 This is the working area for the individual Internet-Draft, "CoAP over GATT (Bluetooth Low Energy Generic Attributes)".
 
-* [Editor's Copy](https://git@gitlab.com:chrysn.github.io/coap-over-gatt/#go.draft-amsuess-core-coap-over-gatt.html)
+* [Editor's Copy](https://chrysn.gitlab.io/coap-over-gatt/)
 * [Individual Draft](https://tools.ietf.org/html/draft-amsuess-core-coap-over-gatt)
-* [Compare Editor's Copy to Individual Draft](https://git@gitlab.com:chrysn.github.io/coap-over-gatt/#go.draft-amsuess-core-coap-over-gatt.diff)
 
 ## Building the Draft
 
@@ -21,4 +20,4 @@ This requires that you have the necessary software installed.  See
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/git@gitlab.com:chrysn/coap-over-gatt/blob/master/CONTRIBUTING.md).
+[guidelines for contributions](https://gitlab.com/chrysn/coap-over-gatt/-/blob/master/CONTRIBUTING.md).
