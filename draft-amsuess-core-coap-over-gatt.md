@@ -34,7 +34,7 @@ informative:
     title: Bluetooth Core Specification v5.2
     date: 2019-12-31
     format:
-      PDF: https://www.bluetooth.org/docman/handlers/downloaddoc.ashx?doc_id=480376
+      PDF: https://www.bluetooth.org/docman/handlers/downloaddoc.ashx?doc_id=478726
 
 
 
