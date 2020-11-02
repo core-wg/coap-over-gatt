@@ -115,7 +115,7 @@ CoAP-over-GATT uses individual GATT Characteristics to model a reliable request-
 Therefore, it has no message types or message IDs (in which it resembles CoAP-over-TCP {{RFC8323}}),
 and no tokens.
 In the place of tokens,
-.
+different Bluetooth characteristics (comparable to open ports in IP based networks) can be used.
 All messages use GATT to ensure reliable transmission.
 
 A GATT server announces service of UUID 8df804b7-3300-496d-9dfa-f8fb40a236bc (abbreviated US in this document),
@@ -176,6 +176,28 @@ where the .ble.arpa address do not resolve to any IP addresses.
 
 \[ Accepting this will require a .arpa registering IANA consideration to replace the URI one. \]
 
+## Compression and reinterpretation of non-CoAP characteristics
+
+The use of SCHC is being evaluated in combination with CoAP-over-GATT;
+the device can use the characteristic UUID to announce the static context used.
+
+Together with non-traditional response forms ({{?I-D.bormann-core-responses}}
+and contexts that expand, say, a numeric value 0x1234 to a message like
+
+```
+2.05 Content
+Response-For: GET /temperature
+Content-Format: application/senml+cbor
+Payload (in JSON-ish equivalent):
+[
+    {1 /* unit */: "K", 2 /* value */: 0x1234}
+]
+```
+
+This enables a different use case than dealing with limited environments:
+Accessing BLE devices via CoAP without application specific gateways.
+Any required information about the application can be expressed in the SCHC context.
+
 # IANA considerations
 
 ## Uniform Resource Identifier (URI) Schemes
@@ -195,8 +217,8 @@ Physical proximity can not be inferred from this means of communication.
 
 --- back
 
-<!--
 # Change log
 
 Since -00:
--->
+
+* Add note on SCHC possibilities.
