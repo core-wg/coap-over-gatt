@@ -1,0 +1,132 @@
+\documentclass[aspectratio=169]{beamer}
+
+\setbeamertemplate{footline}[frame number]
+
+% generic packages
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{ulem}
+\usepackage{hyperref}
+
+% about the presentation
+\title{CoAP over GATT}
+\subtitle{\texttt{draft-amsuess-core-coap-over-gatt}}
+\author{Christian~Amsüss}
+\date{IETF109, CoRE, 2020-11-20}
+
+% used commands
+
+\usepackage{verbatim}
+
+% attach self
+
+\usepackage{embedfile}
+\embedfile{\jobname.tex}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{What?}\Large
+	Exchange CoAP over GATT
+
+	\bigskip
+
+	GATT: Generic Attribute Profile of Bluetooth Low Energy
+\end{frame}
+
+\begin{frame}{Why?}\large
+	All the same reasons as for CoAP-over-WS
+
+	\bigskip
+
+	\begin{itemize}
+		\item Extend CoAP, especially OSCORE, to applications with limited APIs
+
+			\bigskip
+
+			“Smart” phone apps, browsers\footnote{Not generally approved; future versions on future protocols (WebRTC data channel?).}
+
+			\bigskip
+
+		\item \sout{Too lazy to implement IPSP}
+
+		\bigskip
+
+		\item \sout{But with IPSP I'll have to have a full IP stack}
+
+		\bigskip
+
+		\item Explain non-CoAP GATT values to CoAP devices through SCHC\Huge?
+
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{How?}\large
+	\newcommand{\paste}{\enspace||\enspace}
+	Request: Write $Method \paste  Options \paste  [0xff \paste  Payload]$
+
+	\bigskip
+
+	Response: Read $Code \paste  Options \paste  [0xff \paste  Payload]$
+
+	\bigskip
+
+	No message type / MID: Reliability handled by BLE
+
+	\bigskip
+
+	No Token: Multiplexing handled by descriptors\footnote{May or may not be practical.}
+
+	\bigskip
+
+	$\sim 512$ Byte MTU\footnote{May be lower per device, to be investigated.}: Block-wise up to szx=5
+\end{frame}
+
+\begin{frame}{URI questions}\large
+	\texttt{coap+bluetooth://00-11-22-33-44-55-66-77-88-99/.well-known/core}
+
+	\bigskip
+
+	\texttt{coap+bluetooth://0x2000a140/.well-known/core}
+
+	\texttt{coap+bluetooth://[]\%0x2000a140/.well-known/core}
+
+	\bigskip
+
+	\texttt{coap://device.example.com/.well-known/core}
+
+	where
+
+	\texttt{device.example.com. IN BLUETOOTH 00-11-..-99}
+
+	\bigskip
+
+	\texttt{coap://00-11-..-99.blue.arpa/.well-known/core}
+
+	\bigskip
+
+	… but basically this means continuing on \texttt{protocol-negotiation}
+\end{frame}
+
+\begin{frame}{Implementations}\large
+	\includegraphics[width=\textwidth]{~/git/coap-gatt-demo/screenshots/pairing.png}
+\end{frame}
+
+\begin{frame}{Implementations}\large
+	\includegraphics[width=\textwidth]{~/git/coap-gatt-demo/screenshots/result.png}
+\end{frame}
+
+\begin{frame}{Roadmap}\large
+	\begin{itemize}
+		\item Gather implementation experience
+		\item Keep draft in sync
+		\item WG feedback
+		\item Experimental “This is how a few people do it” document
+			\bigskip
+		\item If aiming for standards track, not before GATT is accessible from Mozilla browsers\footnote{\url{https://github.com/mozilla/standards-positions/issues/95}}
+	\end{itemize}
+\end{frame}
+
+\end{document}
