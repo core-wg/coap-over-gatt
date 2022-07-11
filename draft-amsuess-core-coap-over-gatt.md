@@ -229,6 +229,23 @@ where the .ble.arpa address do not resolve to any IP addresses.
 
 \[ Accepting this will require a .arpa registering IANA consideration to replace the URI one. \]
 
+### Use with persistent addresses
+
+When services are meant to provide long-lived and universally usable URIs,
+addresses based on MAC addresses can be impractical,
+because they fluctuate on hardware changes.
+(Moreover, privacy mechanisms on the device or the platform can render them unusable even before hardware changes).
+
+In the absence of a usable host or service name registry,
+implementers may opt for non-GATT addresses right away.
+{{?I-D.ietf-core-transport-indication}} provides the means to advertise a different canonical address,
+and to announce availability of that advertised service on the present transport, CoAP-over-GATT.
+If the device is not generally reachable,
+the canonical address might also be unreachable (see {{?I-D.ietf-core-transport-indication}} section "Unreachable canonical origin address").
+
+When long-lived addresses circumvent privacy preserving measures,
+considerations concering the tracking of devices \[ are TBD along the lines of "don't make it discoverable to unauthorized sources, and in case of doubt let the peer show its credentials first" \].
+
 ## Compression and reinterpretation of non-CoAP characteristics
 
 The use of SCHC is being evaluated in combination with CoAP-over-GATT;
