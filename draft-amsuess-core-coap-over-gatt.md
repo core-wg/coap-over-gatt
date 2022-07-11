@@ -193,6 +193,49 @@ If a server provides multiple OC typed characteristics,
 parallel requests or observations are possible;
 otherwise, this transport is limited to a single pending request.
 
+### Development directions
+
+Three major concerns may need addressing in future iterations of this protocol:
+
+* Role reversal.
+
+  This may be implemented by adding a GATT server to the central,
+  or by multiplexing requests and responses onto a single read and write channel.
+
+* Response reliability.
+
+  When multiple responses are sent to a request
+  (e.g. when using {{?I-D.tiloca-core-groupcomm-proxy}}, or more generally {{?I-D.bormann-core-responses}})
+  of which all need to be delivered,
+  or if role reversal is implemented by multiplexing,
+  the GATT server needs to know when a message has been read;
+  the GATT mechanisms do not provide that information.
+
+  Previously, this was not deemed relevant, as for the original non-traditional responses,
+  observation notifications {{?RFC7641}},
+  only eventual consistency is relevant.
+
+  One option is to replace reads with write-with-response operations,
+  and to introduce a flag that marks previously read messages as received.
+  This is essentially building a 1-bit message ID mechanism.
+  (No longer IDs are necessary, because messages on GATT are not reordered on the network).
+
+* Fragmentation.
+  If the current approach of requiring devices to support large MTU sizes turns out to be impractical,
+  or if GATT level fragmentation vastly outperforms CoAP fragmentation,
+  it may be necessary to use composite reads and writes on GATT.
+
+  Care has to be taken to use only operations supported by {{webbluetooth}}: that API does not expose reads with offsets.
+
+  Offset based fragmentation may also be incompatible with the write-with-response approach suggested for reliability.
+
+* Concurrent requests.
+  If a multiplexing approach is chosen for role reversal,
+  the current setup of multiple characteristics for multiple requests may become obsolete.
+
+  A possible solution is to re-introduce tokens,
+  in a message format similar to that of CoAP-over-WebSockets {{RFC8323}}.
+
 ## Addresses
 
 The URI scheme associated with CoAP over GATT is "coap+gatt".
