@@ -67,7 +67,7 @@ It is intended as a means for an application to escape the limitations of its en
 with a special focus on web applications that use the Web Bluetooth {{webbluetooth}}.
 In that, it is similar to CoAP-over-WebSockets {{RFC8323}}.
 
-## Appplication example
+## Application example
 
 Consider a network of home automation light bulbs and switches,
 which internally uses CoAP on a 6LoWPAN network
