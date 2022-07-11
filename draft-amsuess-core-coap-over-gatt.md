@@ -157,8 +157,8 @@ otherwise, this transport is limited to a single pending request.
 
 \[ ... coap+bluetooth://00-11-22-33-44-55-66-77-88-99/.well-known/core ... \]
 
-Note that when using Web Bluetooth {{webbluetooth}},
-neither the own nor the peer's address are known to the application.
+Note that on some platforms (e.g. Web Bluetooth {{webbluetooth}}),
+the peer's or the own address may not be known application.
 They may come up with an application-internal authority component
 (e. g. `coap+bluetooth://id-SomeInternalIdentifier/.well-known/core`),
 but must be aware that those can not be expressed towards anything outside the local stack.
