@@ -155,13 +155,27 @@ otherwise, this transport is limited to a single pending request.
 
 ## Addresses
 
-\[ ... coap+bluetooth://00-11-22-33-44-55-66-77-88-99/.well-known/core ... \]
+The URI scheme associated with CoAP over GATT is "coap+gatt".
+The default value of Uri-Host is the MAC address of the CoAP server,
+in hexadecimal encoding, with the dash character ("-") separating the bytes.
+\[ Some bikeshedding is expected on these details. \]
+
+User information and port are always absent with this scheme.
+
+Assembling the URI of a request for the discovery resource of a BLE device with the MAC address 00:11:22:33:44:55 would thus be assembled, under the rules of {{Section 6.4 of RFC7252}}, to `coap+gatt://00-11-22-33-44-55/.well-known/core`.
+
+Locally defined host or service name registries may be used to create names
+that are more suitable for human interaction.
+For DNS, which is widely used for this purpose,
+no record types are registered that map to Bluetooth MAC addresses at the time of writing.
 
 Note that on some platforms (e.g. Web Bluetooth {{webbluetooth}}),
 the peer's or the own address may not be known application.
-They may come up with an application-internal authority component
-(e. g. `coap+bluetooth://id-SomeInternalIdentifier/.well-known/core`),
-but must be aware that those can not be expressed towards anything outside the local stack.
+They may come up with an application-internal registered name component
+(e. g. `coap+gatt://id-SomeInternalIdentifier/.well-known/core`),
+but must be aware that those can not be expressed towards anything outside the local stack --
+the same way they would avoid using IPv6 zone identifiers or URIs whose host name is `localhost`.
+
 
 ### Scheme-free alternative
 
