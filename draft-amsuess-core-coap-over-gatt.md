@@ -333,6 +333,13 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since -01:
+
+* Point out (possibly conflicting) development directions.
+* Describe URI scheme more completely, including persistent addresses.
+* Aim for standards track.
+* Describe rejeced alternative approaches.
+
 Since -00:
 
 * Add note on SCHC possibilities.
