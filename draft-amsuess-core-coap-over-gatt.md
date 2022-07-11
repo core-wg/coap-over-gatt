@@ -26,6 +26,22 @@ informative:
     date: 2020-02-24
     format:
       HTML: https://webbluetoothcg.github.io/web-bluetooth/
+  goldengate:
+    title: Golden Gate
+    author:
+      -
+        ins: Fitbit, Inc.
+    date: 2020
+    format:
+      HTML: https://fitbit.github.io/golden-gate/
+  nefzger:
+    title: Talk CoAP to me – IoT over Bluetooth Low Energy
+    author:
+      -
+        ins: Matthias Nefzger
+    date: 2021-03-01
+    format:
+      HTML: https://www.maibornwolff.de/en/blog/talk-coap-me-iot-over-bluetooth-low-energy
   RFC8323:
   RFC8613:
   RFC7959:
@@ -66,6 +82,8 @@ those should rather build an IP based network and transport CoAP as originally s
 It is intended as a means for an application to escape the limitations of its environment,
 with a special focus on web applications that use the Web Bluetooth {{webbluetooth}}.
 In that, it is similar to CoAP-over-WebSockets {{RFC8323}}.
+GATT, which has read and write semantics, is not a perfect match for CoAP's request/response semantics;
+this specification bridges the gap in order to make CoAP transportable over what is sometimes the only available protocol.
 
 ## Application example
 
@@ -93,6 +111,35 @@ and a browser view that runs the original web application in a configuration to 
 That connection is no replacement when remote control of the system is desired
 (in which case, again, a router is required that translates 6LoWPAN to the rest of the network),
 but suffices for many commissioning tasks.
+
+## Alternatives
+
+Several approaches were considered, but considered unsuitable for the intended use cases:
+
+* CoAP over 6LoWPAN over BLE:
+  While this is the natural choice for transporting CoAP over BLE,
+  it is unavailable on typical end user devices.
+  There is no clear path toward how that would be integrated in platforms like Android or iOS,
+  and even if it were, creating a network connection to a nearby device from within an application might not be possible (if how WLAN networks are managed is any indication).
+
+* GoldenGate {{goldengate}}:
+  This introduces significant network overhead,
+  and burdens the end user device application with shipping a full network stack
+  that is executed in a position where it can not integrate fully with the operating system's network stack.
+
+  Moreover, this places a retransmission layer on top of a reliable transport (GATT),
+  duplicating effort and possibly aggravating congestion situations.
+
+* CoAP over UDP over SLIP over GATT UART {{nefzger}}:
+  This is similar to the GoldenGate approach,
+  but built on the GATT UART provided with Nordic Semiconductor's libraries<!-- https://learn.adafruit.com/introducing-adafruit-ble-bluetooth-low-energy-friend/uart-service -->.
+
+  This shares the network stack duplication and retransmission concerns of GoldenGate.
+
+* slipmux {{?I-D.bormann-t2trg-slipmux}} over BLE GATT UART service:
+  This is similar to the previous item;
+  the stack duplication concern is addressed,
+  but retransmissions are still active atop of a service that already provides reliability.
 
 # Terminology {#terminology}
 
