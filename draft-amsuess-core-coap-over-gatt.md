@@ -3,7 +3,7 @@ title: "CoAP over GATT (Bluetooth Low Energy Generic Attributes)"
 docname: draft-amsuess-core-coap-over-gatt-latest
 ipr: trust200902
 stand_alone: true
-cat: exp
+cat: std
 wg: CoRE
 kw: CoAP, bluetooth, gatt
 author:
@@ -66,14 +66,6 @@ those should rather build an IP based network and transport CoAP as originally s
 It is intended as a means for an application to escape the limitations of its environment,
 with a special focus on web applications that use the Web Bluetooth {{webbluetooth}}.
 In that, it is similar to CoAP-over-WebSockets {{RFC8323}}.
-
-## Procedural status
-
-\[ This section will be removed before publication. \]
-
-The path of this document is currently not clear.
-It might attract interest in the CoRE working group,
-but might be easier to process as an indpenendent submission.
 
 ## Appplication example
 
