@@ -172,7 +172,8 @@ The client may need to attempt reading the characteristic several times
 until the response is ready,
 and may subscribe to indications to get notifiied when the response is ready.
 
-The server does not need to keep the response readable after it has been read successfully.
+The server does needs to keep the response readable after it has been read,
+for the server can not know whether the read was completed by the client.
 
 If the request and initial response establish an observation,
 the client may keep reading;
