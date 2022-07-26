@@ -1,0 +1,158 @@
+\documentclass[aspectratio=169,colorlinks]{beamer}
+\usetheme{Boadilla} % plainest one with slide number footer
+
+% generic packages
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{ulem}
+\usepackage{hyperref}
+
+% about the presentation
+\title{CoAP over GATT}
+\subtitle[draft-amsuess-core-coap-over-gatt with a side serving of draft-ietf-core-transport-indication]{\texttt{draft-amsuess-core-coap-over-gatt}\\ \mbox{} \\ with a side serving of\\ \texttt{draft-ietf-core-transport-indication}}
+\author{Christian~Amsüss}
+\date{IETF114, CoRE, 2022-07-26}
+
+% used commands
+
+\usepackage{verbatim}
+
+% attach self
+
+\usepackage{embedfile}
+\embedfile{\jobname.tex}
+\embedfile{Makefile}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Timeline}\Large
+	\begin{description}
+		\item[2020] Initial design, -00 and -01, prototypes
+		\item[IETF109] Proposed for experimental
+
+		\bigskip
+		\item[2001] \texttt{transport-indication} gaining traction
+		\bigskip
+
+		\item[2022] Industry interest
+
+			Ongoing filling of gaps
+
+		\item[IETF114] \ldots
+	\end{description}
+\end{frame}
+
+\begin{frame}[fragile]{Now explicit: Alternatives}
+	\framesubtitle{``Why even do non-IP transport for IETF protocol?''}
+
+\vspace{-1cm}
+\begin{verbatim}
+                                                     +----------------+
+                                                     | CoAP-over-UDP  |
+                                 +----------------+  +----------------+                    
+                                 | CoAP-over-UDP  |  |      IPv6      |
++----------------+               +----------------+  +----------------+  
+| CoAP-over-GATT |               |      IPv6      |  |    Gattlink    |  
+|----------------|               |----------------|  |----------------|  
+|      GATT      | \ widely      | 6LoWPAN f. BLE |  |      GATT      | \
+|----------------| | accessible  |----------------|  |----------------| |
+|     L2CAP      | | to users    |     L2CAP      |  |     L2CAP      | |
+|----------------| | (even from  |----------------|  |----------------| |
+|      BLE       | / Chrome)     |      BLE       |  |      BLE       | /
++----------------+               +----------------+  +----------------+  
+
+  You Are Here                       BLE IPSP           Goldengate
+	\end{verbatim}
+\end{frame}
+
+\begin{frame}{Gaps being filled: Multiplexing, role reversal}\large
+	Current text:
+
+	\begin{itemize}
+		\item Single direction per characteristic.
+		\item Single pending request per characteristic.
+		\item Create as many characteristics as you support observations.
+		\item Message size limited by MTU.
+	\end{itemize}
+
+	\pause
+	Reconsidering:
+
+	\begin{itemize}
+		\item Requests and responses on a single characteristic.
+		\item Framed like CoAP-over-WebSockets.
+		\item Use composite reads/writes for payloads exceeding MTU.
+	\end{itemize}
+
+	\bigskip
+
+	Shaped by GATT properties (ordered, unilateral reliability -- highly unlike UDP), and experience of contributors.
+\end{frame}
+
+\begin{frame}{Addressing}\Large
+	It could be simple\ldots
+
+	\texttt{coap+gatt://00-11-22-33-44-55/.well-known/core}
+	
+	\pause
+	\bigskip
+
+	\ldots but it is not:
+
+	\begin{itemize}
+		\item iOS apps do not get to see MAC addresses, but hashes thereof that are salted with some host identifier.
+		\item W3C Web Bluetooth suggests browsers use different identifers than MAC addresses.
+	\end{itemize}
+
+	\texttt{coap+gatt://whatever-the-client-resolves/.well-known/core}
+
+	\bigskip
+
+	A bit like \texttt{coap://[fe80::815]\%enp0s2/.well-known/core}?
+\end{frame}
+
+\begin{frame}{When would we even \textit{want} to address by MAC?}\large
+	Expected cases:
+
+	\begin{itemize}
+		\item Request from device: Likely forwarded through proxy in phone to \texttt{coap+tcp://\ldots} address.
+		\item Device registers at some RD-like service: That might pick a better name right away.
+
+			\texttt{?ep=device1234\&d=example.com}
+
+			\texttt{<coap://device1234.example.com/temp>,}\\
+			\texttt{</>;rel=has-proxy;anchor=<coap://device1234.example.com/temp>}\footnote{Resolution rules might prevent that, \texttt{transport-indication} could specify reverse role to avoid the need to explicitly name \texttt{</>}, which is hard given the previous slide's caveats.}
+	\end{itemize}
+
+	{\footnotesize This is why LwM2M could use NIDD for years and only recently think of the relevant scheme.}
+
+	\bigskip
+
+	Is an explicitly selected own URI (that is possibly not even on the same transport) a direction \texttt{transport-indication} (and by extension {\ttfamily resource-directory- extensions}) should focus more on?
+\end{frame}
+
+\begin{frame}{Roadmap}\large
+	\begin{itemize}
+		\item Develop capabilities built on GATT
+
+			Input appreciated, but probably needs to come from BLE experts.
+
+		\item Use CoAP-over-GATT as driver for \texttt{transport-indication}
+
+			More for illustrative reasons; -over-WebSockets or \texttt{t2trg-slipmux} would have the very similar properties.
+		\item WG feedback -- potential for Standards Track?\footnote{IETF 109 slides said ``not before Firefox can do it''; adoption showed that using from browser is not as much the center point as was previously assumed.}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Thanks}\Large
+	Comments?
+
+	\bigskip
+
+	Questions?
+\end{frame}
+
+\end{document}
