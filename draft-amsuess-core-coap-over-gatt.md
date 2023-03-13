@@ -127,7 +127,7 @@ Several approaches were considered, but considered unsuitable for the intended u
   and burdens the end user device application with shipping a full network stack
   that is executed in a position where it can not integrate fully with the operating system's network stack.
 
-  Moreover, this places a retransmission layer on top of a reliable transport (GATT),
+  Moreover, this places a retransmission layer on top of a partially reliable transport (GATT),
   duplicating effort and possibly aggravating congestion situations.
 
 * CoAP over UDP over SLIP over GATT UART {{nefzger}}:
@@ -139,7 +139,7 @@ Several approaches were considered, but considered unsuitable for the intended u
 * slipmux {{?I-D.bormann-t2trg-slipmux}} over BLE GATT UART service:
   This is similar to the previous item;
   the stack duplication concern is addressed,
-  but retransmissions are still active atop of a service that already provides reliability.
+  but retransmissions are still active atop of a service that already provides some reliability.
 
 # Terminology {#terminology}
 
