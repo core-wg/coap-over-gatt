@@ -145,6 +145,37 @@ Several approaches were considered, but considered unsuitable for the intended u
 
 # Protocol description
 
+## Boundary conditions
+
+\[ This section may be shortened in later iterations,
+but is kept around while the protocol is being developed
+to easily fix mistakes made from wrong assumptions. \]
+
+CoAP-over-GATT has different properties than UDP transported over the Internet:
+
+* Messages sent by one party are received by the other party in the order in which they are sent.
+  There is no re-ordering.
+
+  (There is also a total order on messages sent by any party,
+  but that property is not useful because it's often not accessible through the Bluetooth stacks.)
+
+* There is limited reliabiliy built into the protocol.
+
+  Data transmissions initiated by the data source can be
+  unreliable ("write without response", "notify")
+  or reliable ("write with response", "indicate").
+
+  The caveat with their relability is that acknowledgements are sent by the BLE stack,
+  without consulting with the application.
+  (This is not only done for simplicity but also for power efficiency:
+  There is only a short time window in which the data source is listening for confirmations).
+
+  The reliability mechanisms are still useful, though:
+  Both "write" and "notify"/"indicate" update the GATT characteristic's state,
+  and while a slow application may miss data when sent in fast succession,
+  it is reasonable to expect from the BLE stack to deliver the last data to the application
+  when no more data is sent.
+
 ## Requests and responses
 
 \[ This section is not thought through or implemented yet,
