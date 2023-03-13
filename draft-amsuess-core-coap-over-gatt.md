@@ -145,7 +145,7 @@ Several approaches were considered, but considered unsuitable for the intended u
 
 # Protocol description
 
-## Boundary conditions
+## Boundary conditions: GATT properties {#gatt-basics}
 
 \[ This section may be shortened in later iterations,
 but is kept around while the protocol is being developed
@@ -176,80 +176,154 @@ CoAP-over-GATT has different properties than UDP transported over the Internet:
   it is reasonable to expect from the BLE stack to deliver the last data to the application
   when no more data is sent.
 
+* Reads and writes may be subtly mixed:
+  When a characteristic is written to,
+  and it is read before the BLE server application has had time to interact with its BLE stack,
+  the written value may be echoed back at read time.
+
+  This is likely not problematic when "notify"/"indicate" is used
+  instead of polling reads,
+  but it seems prudent to take precautions.
+
 ## Requests and responses
 
-\[ This section is not thought through or implemented yet,
-and could probably end up very different. \]
+CoAP-over-GATT uses a GATT Characteristics to model the concurrent flow of requests and responses.
+Similar CoAP-over-UDP it offers both reliable and unreliable transfer and message deduplication,
+but as GATT's properties (see {{gatt-basics}}) differ from UDP's,
+it uses a different serialization and a different kind of message IDs.
 
-CoAP-over-GATT uses individual GATT Characteristics to model a reliable request-response mechanism.
-Therefore, it has no message types or message IDs (in which it resembles CoAP-over-TCP {{RFC8323}}),
-and no tokens.
-In the place of tokens,
-different Bluetooth characteristics (comparable to open ports in IP based networks) can be used.
-All messages use GATT to ensure reliable transmission.
+Tokens are used like with other CoAP transports,
+and allow keeping multiple requests active at the same time.
 
 A GATT server announces service of UUID 8df804b7-3300-496d-9dfa-f8fb40a236bc (abbreviated US in this document),
-with one or more characteristics of UUID 2a58fc3f-3c62-4ecc-8167-d66d4d9410c2 (abbreviated UC).
+with one or more characteristics of UUID 2a58fc3f-3c62-4ecc-8167-d66d4d9410c2 (abbreviated UC)
+through BLE advertisements from a BLE peripheral (typically a constrained device),
+which are discovered by a BLE central (typically an end user device).
+The server and client roles of CoAP and GATT are independent of each other:
+either BLE participant can send requests in a CoAP client role.
 
-\[ Right now, this only supports requests from the GATT client to the GATT server; role reversal might be added later. \]
+### Message sub-layer
 
-A client can start a CoAP request by writing to the UC characteristic
-a sequence composed of a single code byte, any options encoded in the option format of {{RFC7252}} Section 3.1,
-optionally followed by a payload marker and the request payload.
+At its CoAP-over-GATT characteristic, each party maintains a single bit Message ID (initialized at 1 when a connection is created),
+and the last Message ID sent by the peer (initialized at 0 when a connection is created).
 
-After the successful write,
-the client can read the response back from the server on the same characteristic.
-The client may need to attempt reading the characteristic several times
-until the response is ready,
-and may subscribe to indications to get notifiied when the response is ready.
+Messages are serialized as GATT values.
+The GATT client sends a message by writing it to the characteristic (reliably using the "write with response" or unreliably using "write without response" operation);
+the GATT server sends them reliably using an "indicate" or unreliably "notify" event.
+The serialization format is the same for all, and illustrated in {{fig-message}}:
 
-The server does needs to keep the response readable after it has been read,
-for the server can not know whether the read was completed by the client.
+~~~
+0   1   2   3   4       8       16      varying
++---+---+---+---+-------+-------+-------+---------+----+---------+
+| R | M | C | A |  TKL  |  Code | Token | Options | ff | Payload |
++---+---+---+---+-------+-------+-------+---------+----+---------+
+~~~
+{: #fig-message title="Components of a message"}
 
-If the request and initial response establish an observation,
-the client may keep reading;
-the server may keep the latest notification available indefinitely (especially if it turns out that "has been read successfully" is hard to determine)
-or make it readable only once for each new state.
+* a single message description byte,
+  compose of 4 bits R (Role), M (Message ID), C (Confirm) and A (Acknowledge ID),
+  followed by 4 bits of token length (TKL).
 
-Once the client writes a new request to a UC characteristic,
-any later reads pertain to that request,
-and any observation previously established is cancelled implicitly.
+* Code, token, options, payload marker and payload as in {{RFC7252}}.
+
+  Unlike there, there is no 16-bit Message ID field
+  (a similar role is taken by bits M and A),
+  and in empty messages,
+  the code is not sent.
+
+The bits are set as follows:
+
+* The R bit is always set to 0 by the GATT server,
+  and to 1 by the GATT client.
+
+* The Message ID bit is always set to the current Message ID of the sender.
+
+* The Confirm bit is set if the sender asks the peer to acknowledge that the message has been noted.
+
+* The Acknowledge ID is always set to the peer's last sent Message ID that had the Confirm bit set.
+
+### Using the message sub-layer
+
+\[ This section reflects ongoing experimentation with the above serialization format and rules.
+Senders may use other patterns as long as they do not stall their peer by not sending any messages after the Confirm bit was set. \]
+
+To send a message unreliably,
+a sender sets its latest Message ID in the M bit, sets C to 0, and populates the remaining bits per the rules above.
+It then sends the message unreliably
+(it may be sent reliably, especially when the peer set the C bit before).
+After an unreliable message, the sender may send more unreliable messages.
+It should avoid sending multiple messages in the same connection event.
+
+To send a message reliably,
+a sender sets its latest Message ID in the M bit, sets C to 1, and populates the remaining bits per the rules above.
+It thens ends the message reliably
+(it may send unreliably if a message is expected from the peer soon, but then needs to be prepared to send the same message again).
+After sending that message,
+the sender does not send any other message until a message is received with A equal to the sent message's M bit.
+The sender may need to send the very same message again if no earlier transmission of the message happened reliably.
+The sender may cancel the transmission by sending an empty message with the same M and C bits,
+or by sending different message with these bits (which are then all unreliable transmissions).
+
+### Message deduplication
+
+CoAP-over-GATT participants MUST ignore a message arriving at a characteristic
+if it is identical to the one received previously in the same connection.
+(The first message is never ignored).
+
+Note that it is not possible to send two identical consecutive messages unreliably.
+When sending identical requests, the sender may vary the token.
+Sending identical responses generally is rarely significant, even with the generalized {{?I-D.bormann-core-responses}},
+because the mechanism to make responses "non-matching" in that document's terminology typically incurs variation.
+When it does not, but the repetition is still significant, sending the messages reliably becomes necessary.
+
+### Requests and responses
+
+CoAP requests and responses are built on the message sub-layer
+as they are in {{RFC7252}}:
+requests are sent with a token chosen by the CoAP client,
+and the CoAP server sends a response with the same token.
+
+Responses and message-layer acknowledgments can happen in the same message.
+Unlike in {{RFC7252}}, there is no association between a request and its message ID:
+Any message may serve as an acknowledgement;
+it is always only the token that matches requests to responses.
+
+### Fragmentation
 
 Attribute values are limited to 512 Bytes ({{bluetooth52}} Part F Section 3.2.9),
 practically limiting blockwise operation ({{RFC7959}}) to size exponents to 4 (resulting in a block size of 256 byte).
 Even smaller messages might enhance the transfer efficiency
-when they avoid fragmentation at the L2CAP level.
+when they avoid fragmentation at the L2CAP level. \[ TBD: Verify: \]
+
+### Multiple characteristics
 
 If a server provides multiple OC typed characteristics,
-parallel requests or observations are possible;
-otherwise, this transport is limited to a single pending request.
+multiple messages can be sent without waiting for individual confirmation.
+This is similar to using RFC7252 with NSTART > 1,
+and may be used by the GATT client if the GATT server lists multiple UC characteristics.
+The GATT server can send messages only through characteristics on which the GATT client enabled "indicate" or "notify";
+if the GATT client does not support multiple characteristics,
+it will just pick any and only enable them on that one.
+
+Each characteristic has its independent message ID bits.
+All characteristics of a service share a single token space,
+and responses need not necessarily be sent on the characteristic the request was sent on.
+
+The use of muliple characteristics is primarily practical
+when large amounts of data are to be transferred.
+These transfers can utilize much of BLE's bandwidth
+because they make it easy to send much data within a single BLE connection event.
 
 ### Development directions
 
-Three major concerns may need addressing in future iterations of this protocol:
+* Is there any good reason to allow read operations?
 
-* Role reversal.
+  A GATT client that is waiting for a Confirm bit to be acknowledged might attempt a Read
+  (for the case that the confirmation arrived in an unreliable message),
+  but might just as well perform the last write again.
 
-  This may be implemented by adding a GATT server to the central,
-  or by multiplexing requests and responses onto a single read and write channel.
-
-* Response reliability.
-
-  When multiple responses are sent to a request
-  (e.g. when using {{?I-D.tiloca-core-groupcomm-proxy}}, or more generally {{?I-D.bormann-core-responses}})
-  of which all need to be delivered,
-  or if role reversal is implemented by multiplexing,
-  the GATT server needs to know when a message has been read;
-  the GATT mechanisms do not provide that information.
-
-  Previously, this was not deemed relevant, as for the original non-traditional responses,
-  observation notifications {{?RFC7641}},
-  only eventual consistency is relevant.
-
-  One option is to replace reads with write-with-response operations,
-  and to introduce a flag that marks previously read messages as received.
-  This is essentially building a 1-bit message ID mechanism.
-  (No longer IDs are necessary, because messages on GATT are not reordered on the network).
+  Reading would be more efficient (because it can happen without application intervention, and no data is sent),
+  but the added complexity might not be worth the enhancements.
 
 * Fragmentation.
   If the current approach of requiring devices to support large MTU sizes turns out to be impractical,
@@ -259,13 +333,6 @@ Three major concerns may need addressing in future iterations of this protocol:
   Care has to be taken to use only operations supported by {{webbluetooth}}: that API does not expose reads with offsets.
 
   Offset based fragmentation may also be incompatible with the write-with-response approach suggested for reliability.
-
-* Concurrent requests.
-  If a multiplexing approach is chosen for role reversal,
-  the current setup of multiple characteristics for multiple requests may become obsolete.
-
-  A possible solution is to re-introduce tokens,
-  in a message format similar to that of CoAP-over-WebSockets {{RFC8323}}.
 
 ## Addresses
 
