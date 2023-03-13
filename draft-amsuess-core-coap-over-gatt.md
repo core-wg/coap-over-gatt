@@ -460,6 +460,14 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since -02:
+
+* Message format extended by a leading byte, the option to have a token.
+  This enables role reversal and concurrent requests.
+* The UC identifier was changed to reflect the incompatible change in protocol.
+* A section on used BLE properties was added.
+* A section providing outlook on other data for advertisements was added.
+
 Since -01:
 
 * Point out (possibly conflicting) development directions.
