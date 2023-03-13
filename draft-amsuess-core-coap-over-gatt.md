@@ -116,7 +116,7 @@ but suffices for many commissioning tasks.
 
 Several approaches were considered, but considered unsuitable for the intended use cases:
 
-* CoAP over 6LoWPAN over BLE:
+* CoAP over 6LoWPAN over BLE (BLE IPSP):
   While this is the natural choice for transporting CoAP over BLE,
   it is unavailable on typical end user devices.
   There is no clear path toward how that would be integrated in platforms like Android or iOS,
