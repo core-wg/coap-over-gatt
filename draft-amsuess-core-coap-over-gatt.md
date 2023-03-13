@@ -169,6 +169,7 @@ CoAP-over-GATT has different properties than UDP transported over the Internet:
   without consulting with the application.
   (This is not only done for simplicity but also for power efficiency:
   There is only a short time window in which the data source is listening for confirmations).
+  Thus, these confirmations can not serve to acknowledge that the a CoAP request contained in the event was read, understood and is being processed.
 
   The reliability mechanisms are still useful, though:
   Both "write" and "notify"/"indicate" update the GATT characteristic's state,
@@ -176,7 +177,7 @@ CoAP-over-GATT has different properties than UDP transported over the Internet:
   it is reasonable to expect from the BLE stack to deliver the last data to the application
   when no more data is sent.
 
-* Reads and writes may be subtly mixed:
+* Reads and writes may be subtly confused:
   When a characteristic is written to,
   and it is read before the BLE server application has had time to interact with its BLE stack,
   the written value may be echoed back at read time.
@@ -187,7 +188,7 @@ CoAP-over-GATT has different properties than UDP transported over the Internet:
 
 ## Requests and responses
 
-CoAP-over-GATT uses a GATT Characteristics to model the concurrent flow of requests and responses.
+CoAP-over-GATT uses a GATT Characteristics to transport requst and response messages.
 Similar CoAP-over-UDP it offers both reliable and unreliable transfer and message deduplication,
 but as GATT's properties (see {{gatt-basics}}) differ from UDP's,
 it uses a different serialization and a different kind of message IDs.
@@ -242,27 +243,36 @@ The bits are set as follows:
 
 * The Acknowledge ID is always set to the peer's last sent Message ID that had the Confirm bit set.
 
+When receiving a message with the C bit set,
+the recipient MUST eventually send a response message with radio reliability.
+
 ### Using the message sub-layer
 
 \[ This section reflects ongoing experimentation with the above serialization format and rules.
 Senders may use other patterns as long as they do not stall their peer by not sending any messages after the Confirm bit was set. \]
 
-To send a message unreliably,
+To send a message unreliably in terms of CoAP transmission,
 a sender sets its latest Message ID in the M bit, sets C to 0, and populates the remaining bits per the rules above.
-It then sends the message unreliably
+It then sends the message unreliably on the radio
 (it may be sent reliably, especially when the peer set the C bit before).
-After an unreliable message, the sender may send more unreliable messages.
+After a CoAP-unreliable message, the sender may send more CoAP-unreliable messages.
 It should avoid sending multiple messages in the same connection event.
 
-To send a message reliably,
+To send a message reliably in terms of CoAP transmission,
 a sender sets its latest Message ID in the M bit, sets C to 1, and populates the remaining bits per the rules above.
-It thens ends the message reliably
+It thens ends the message reliably on the radio
 (it may send unreliably if a message is expected from the peer soon, but then needs to be prepared to send the same message again).
 After sending that message,
 the sender does not send any other message until a message is received with A equal to the sent message's M bit.
 The sender may need to send the very same message again if no earlier transmission of the message happened reliably.
+\[ Do we need to give timing guidance here? Probably not, because it only happens if there is some expectation in the first place. \]
 The sender may cancel the transmission by sending an empty message with the same M and C bits,
 or by sending different message with these bits (which are then all unreliable transmissions).
+
+When receiving a message with the C bit set,
+it is up to the recipient when to send the radio-reliable message.
+If it is expected that a radio-reliable message will be sent soon,
+it is permissible and useful to send unrelated unreliable messages that already account for the set C bit in their A bit.
 
 ### Message deduplication
 
