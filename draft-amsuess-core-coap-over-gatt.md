@@ -196,7 +196,7 @@ Tokens are used like with other CoAP transports,
 and allow keeping multiple requests active at the same time.
 
 A GATT server announces service of UUID 8df804b7-3300-496d-9dfa-f8fb40a236bc (abbreviated US in this document),
-with one or more characteristics of UUID 2a58fc3f-3c62-4ecc-8167-d66d4d9410c2 (abbreviated UC)
+with one or more characteristics of UUID 3d4190a8-f322-4ff8-93fa-8d7bed520333 (abbreviated UC)
 through BLE advertisements from a BLE peripheral (typically a constrained device),
 which are discovered by a BLE central (typically an end user device).
 The server and client roles of CoAP and GATT are independent of each other:
