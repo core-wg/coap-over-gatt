@@ -420,6 +420,25 @@ This enables a different use case than dealing with limited environments:
 Accessing BLE devices via CoAP without application specific gateways.
 Any required information about the application can be expressed in the SCHC context.
 
+## Additional use of advertisements
+
+In the current specification,
+advertisements are used to indicate that CoAP-over-GATT is being used.
+
+Two more uses of them are being considered:
+
+* Some resource metadata might already be transported in advertisements.
+
+  These would need to be compact (in the order of magnitude of 10 bytes or less),
+  and could contain data otherwise only discovered by querying the .well-known/core resource,
+  or (hashes of) AS and audience values for ACE
+  to facilitate connection creation with a device known by its managed identity.
+
+* Advertisements could contain broadcast CoAP messages.
+
+  Given that these non-traditional responses can not have embedded requests (as defined in {{?I-D.bormann-core-responses}}) due to size contraints,
+  a mechanism such as {{?I-D.ietf-core-observe-multicast-notifications}} could be used to distribute some consensus request.
+
 # IANA considerations
 
 ## Uniform Resource Identifier (URI) Schemes
