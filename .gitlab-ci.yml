@@ -1,8 +1,7 @@
 image: debian:bookworm
 pages:
   script:
-    - apt-get update && apt-get -y install software-properties-common
-    - apt-add-repository --component non-free
+    - sed -i 's/main/main non-free/' /etc/apt/sources.list.d/*
     - apt-get update && apt-get -y install xml2rfc ruby-kramdown-rfc2629 make git python3
     - make draft-amsuess-core-coap-over-gatt.html
     - mkdir -p public
