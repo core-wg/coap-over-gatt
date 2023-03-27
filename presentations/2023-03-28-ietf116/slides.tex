@@ -1,0 +1,142 @@
+\documentclass[aspectratio=169,colorlinks]{beamer}
+\usetheme{Boadilla} % plainest one with slide number footer
+
+% generic packages
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{ulem}
+\usepackage{hyperref}
+
+% about the presentation
+\title{CoAP over GATT}
+\subtitle{\texttt{draft-amsuess-core-coap-over-gatt}}
+\author{Christian~Amsüss}
+\date{IETF116 Yokohama, CoRE, 2023-03-28}
+
+% used commands
+
+\usepackage{verbatim}
+
+% attach self
+
+\usepackage{embedfile}
+\embedfile{\jobname.tex}
+\embedfile{Makefile}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}[fragile]{Why}
+	\framesubtitle{``Why even do non-IP transport for IETF protocol?''}
+
+\vspace{-1cm}
+\begin{verbatim}
+                                                     +----------------+
+                                                     | CoAP-over-UDP  |
+                                 +----------------+  +----------------+                    
+                                 | CoAP-over-UDP  |  |      IPv6      |
++----------------+               +----------------+  +----------------+  
+| CoAP-over-GATT |               |      IPv6      |  |    Gattlink    |  
+|----------------|               |----------------|  |----------------|  
+|      GATT      | \ widely      | 6LoWPAN f. BLE |  |      GATT      | \
+|----------------| | accessible  |----------------|  |----------------| |
+|     L2CAP      | | to users    |     L2CAP      |  |     L2CAP      | |
+|----------------| | (even from  |----------------|  |----------------| |
+|      BLE       | / Chrome)     |      BLE       |  |      BLE       | /
++----------------+               +----------------+  +----------------+  
+
+  You Are Here                       BLE IPSP           Goldengate
+	\end{verbatim}
+
+	\large Same reasons as for CoAP-over-WebSockets: Can't escape limited APIs.
+
+\end{frame}
+
+\begin{frame}{2022: Gathered implementation experience with \texttt{-02}}\Large
+	\begin{itemize}
+		\item BLE's reliability doesn't work exactly like I originally thought.
+		\item Neither do BLE implementations.
+		\item Lack of role reversal was limiting.
+		\item Discovery is lacking.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{-03}: Updated mechanism}\large
+	\framesubtitle{based on GATT's properties (ordered, unilateral reliability -- highly unlike UDP)}
+\begin{verbatim}
+0   1   2   3   4       8       16      varying
++---+---+---+---+-------+-------+-------+---------+----+---------+
+| R | M | C | A |  TKL  |  Code | Token | Options | ff | Payload |
++---+---+---+---+-------+-------+-------+---------+----+---------+
+\end{verbatim}
+
+	\begin{itemize}
+		\item Re-introduced token.
+		\item 1-bit message ID only takes care of incomplete operations.
+		\item R-bit prevents accidental message reflection.
+		\item Mechanism for requesting confirmation (a bit like empty ACKs).
+	\end{itemize}
+
+	\bigskip
+
+	Similar to CoAP-over-UDP, but adapted to BLE. Single-byte header.
+\end{frame}
+
+\begin{frame}{For \texttt{-04}: More about discovery}\Large
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\includegraphics[width=\textwidth]{/home/chrysn/git/coap-gatt-demo/screenshots/pairing.png}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			What if we already know our peer\ldots
+
+			\bigskip
+
+			\ldots and there are many CoAP-over-GATT devices around?
+
+			\bigskip
+
+			``know'': by URI, by AS/audience, by advertised resources?
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{For further exploration, possibly in a later add-on}\Large
+	\begin{itemize}
+		\item Multicast by CoAP messages in beacons?
+		\item SCHC retconning of non-CoAP attributes. (``Turn the temperature into a CoAP addressable resource'').
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Addressing}\Large
+	It could be simple\ldots
+
+	\texttt{coap+gatt://00-11-22-33-44-55/.well-known/core}
+	
+	\bigskip
+
+	\ldots but it is not, so we need \texttt{protocol-indication} (no updates here).
+\end{frame}
+
+\begin{frame}{Roadmap}\Large
+	\begin{itemize}
+		\item Update implementations, re-run tests.
+
+		\item Keep using CoAP-over-GATT as driver for \texttt{transport-indication}
+
+			(could also pick -over-WebSockets or \texttt{t2trg-slipmux})
+		\item Explore this in the WG?
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Thanks}\Large
+	Comments?
+
+	\bigskip
+
+	Questions?
+\end{frame}
+
+\end{document}
