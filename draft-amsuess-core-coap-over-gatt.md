@@ -197,7 +197,8 @@ Tokens are used like with other CoAP transports,
 and allow keeping multiple requests active at the same time.
 
 A GATT server announces service of UUID 8df804b7-3300-496d-9dfa-f8fb40a236bc (abbreviated US in this document),
-with one or more characteristics of UUID 3d4190a8-f322-4ff8-93fa-8d7bed520333 (abbreviated UC)
+with one or more pairs of characteristics of UUID 8bf52767-5625-43ca-a678-70883a366866 (the downstream characteristic, abbreviated UCD)
+and ab3720c8-7fc0-41f8-aa2a-9a45c2c01a4b (the upstream characteristic, abbreviated UCU)
 through BLE advertisements from a BLE peripheral (typically a constrained device),
 which are discovered by a BLE central (typically an end user device).
 The server and client roles of CoAP and GATT are independent of each other:
@@ -205,12 +206,12 @@ either BLE participant can send requests in a CoAP client role.
 
 ### Message sub-layer
 
-At its CoAP-over-GATT characteristic, each party maintains a single bit Message ID (initialized at 1 when a connection is created),
+At the UCU/UCD pair of CoAP-over-GATT characteristics, each party maintains a single bit Message ID (initialized at 1 when a connection is created),
 and the last Message ID sent by the peer (initialized at 0 when a connection is created).
 
 Messages are serialized as GATT values.
-The GATT client sends a message by writing it to the characteristic (reliably using the "write with response" or unreliably using "write without response" operation);
-the GATT server sends them reliably using an "indicate" or unreliably "notify" event.
+The GATT client sends a message by writing it to UCD (reliably using the "write with response" or unreliably using "write without response" operation);
+the GATT server sends them reliably using an "indicate" or unreliably "notify" event on UCU.
 The serialization format is the same for all, and illustrated in {{fig-message}}:
 
 ~~~
@@ -222,7 +223,7 @@ The serialization format is the same for all, and illustrated in {{fig-message}}
 {: #fig-message title="Components of a message"}
 
 * a single message description byte,
-  compose of 4 bits R (Role), M (Message ID), C (Confirm) and A (Acknowledge ID),
+  compose of 4 bits R (reserved), M (Message ID), C (Confirm) and A (Acknowledge ID),
   followed by 4 bits of token length (TKL).
 
 * Code, token, options, payload marker and payload as in {{RFC7252}}.
@@ -234,8 +235,9 @@ The serialization format is the same for all, and illustrated in {{fig-message}}
 
 The bits are set as follows:
 
-* The R bit is always set to 0 by the GATT server,
-  and to 1 by the GATT client.
+* The R bit is reserved for future extensions;
+  it MUST be written as 0,
+  and writes with values of 1 MUST be ignored.
 
 * The Message ID bit is always set to the current Message ID of the sender.
 
@@ -307,11 +309,13 @@ when they avoid fragmentation at the L2CAP level. \[ TBD: Verify: \]
 
 ### Multiple characteristics
 
-If a server provides multiple OC typed characteristics,
+If a server provides multiple UCU and UCD typed characteristics,
+they form pairs in the sequence in which they are listed.
+By using them in parallel,
 multiple messages can be sent without waiting for individual confirmation.
 This is similar to using RFC7252 with NSTART > 1,
-and may be used by the GATT client if the GATT server lists multiple UC characteristics.
-The GATT server can send messages only through characteristics on which the GATT client enabled "indicate" or "notify";
+and may be used by the GATT client if the GATT server lists multiple pairs of UCU/UCD characteristics.
+The GATT server can send messages only through UCU characteristics on which the GATT client enabled "indicate" or "notify";
 if the GATT client does not support multiple characteristics,
 it will just pick any and only enable them on that one.
 
