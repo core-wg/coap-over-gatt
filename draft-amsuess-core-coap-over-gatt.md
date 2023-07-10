@@ -535,6 +535,19 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since -03:
+
+* Define semantics of service data field, define ble-sd.arpa for that purpose.
+* Switch to .arpa names for MAC addresses for consistency with service data names.
+* Use one characteristic per data direction. This
+
+  * simplifies implementations on platforms with little control over change
+    events,
+  * removes the necessity to process the R bit, and
+  * frees up that bit in messages.
+
+* Add communication example.
+
 Since -02:
 
 * Message format extended by a leading byte, the option to have a token.
