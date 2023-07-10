@@ -425,6 +425,25 @@ Any required information about the application can be expressed in the SCHC cont
 In the current specification,
 advertisements are used to indicate that CoAP-over-GATT is being used.
 
+If Service Data is transported in the advertisement,
+it contains an identifier of the device in the `ble-sd.arpa` zone,
+such that the lower case hexadecimal representation of the Service Data value is prepended to `.ble-sd.arpa`
+to form a name for the device.
+There is no expectation for these names to be globally unique:
+considerations for beacon lengths may require them to be as short as 2 bytes.
+They are local alias names,
+comparable to `hostname.local`,
+that help applications filter devices
+rather than establishing a connection with several devices
+just to find the intended one.
+
+The use of Service Data names has two upsides compared to filtering by MAC address:
+
+* Service Data identifiers can be stable across changes in hardware.
+* Service Data identifiers can be queried even on platforms
+  on which MAC addresses are not accessible,
+  such as on Web Bluetooth.
+
 Two more uses of them are being considered:
 
 * Some resource metadata might already be transported in advertisements.
@@ -433,6 +452,10 @@ Two more uses of them are being considered:
   and could contain data otherwise only discovered by querying the .well-known/core resource,
   or (hashes of) AS and audience values for ACE
   to facilitate connection creation with a device known by its managed identity.
+
+  \[ This is largely superseded by Service Data identifiers:
+  The level of per deployment customization for what would and would not be hashed
+  is likely so large that there would not be any interoperability exceeding plain identifiers anyway. \]
 
 * Advertisements could contain broadcast CoAP messages.
 
