@@ -328,6 +328,48 @@ when large amounts of data are to be transferred.
 These transfers can utilize much of BLE's bandwidth
 because they make it easy to send much data within a single BLE connection event.
 
+### Communication example
+
+The example illustrated in {{fig-communication}}
+shows an observation request
+with reliable and unreliable responses.
+It chooses the most typical configuration
+where the GATT server is also the BLE peripheral
+(and thus sends avertisements).
+The GATT client is also the CoAP client here.
+
+~~~
+    GATT server                          GATT client
+
+  Send BLE advertisement with one UCU and one UCD ---------->
+
+(Pairing in Just-Works mode and discovery not illustrated)
+
+  <----- Write+Resp. M=1 C=1 A=0 T="01" GET /temp, Observe: 0
+
+(The server sends temperature values unreliably for some time)
+
+  Notify M=1 C=0 A=1 T="01" 2.05 Content, Obs: 1, "22°C" --->
+
+  Notify M=1 C=0 A=1 T="01" 2.05 Content, Obs: 2, "21°C" --->
+
+  <----- Write+Resp. M=0 C=1 A=0 T="02" GET /model
+
+  Indicate M=1 C=1 A=0 T="02" 2.05 Content, "ExampleScan" -->
+
+  <----- Write+Resp. M=0 C=0 A=1 empty
+
+  Notify M=0 C=0 A=0 T="01" 2.05 Content, Obs: 3, "20°C" --->
+
+(At this point, the temperature isn't changing for some time,
+and the server sends a reliable notification)
+
+  Indicate M=0 C=1 A=0 T="01" 2.05 Content, Obs: 4, "20°C" ->
+
+  <----- Write+Resp. M=0 C=0 A=0 empty
+~~~
+{: #fig-communication title="Example message flow"}
+
 ### Development directions
 
 * Is there any good reason to allow read operations?
