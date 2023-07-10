@@ -406,7 +406,7 @@ the device can use the characteristic UUID to announce the static context used.
 Together with non-traditional response forms ({{?I-D.bormann-core-responses}}
 and contexts that expand, say, a numeric value 0x1234 to a message like
 
-```
+~~~
 2.05 Content
 Response-For: GET /temperature
 Content-Format: application/senml+cbor
@@ -414,7 +414,7 @@ Payload (in JSON-ish equivalent):
 [
     {1 /* unit */: "K", 2 /* value */: 0x1234}
 ]
-```
+~~~
 
 This enables a different use case than dealing with limited environments:
 Accessing BLE devices via CoAP without application specific gateways.
