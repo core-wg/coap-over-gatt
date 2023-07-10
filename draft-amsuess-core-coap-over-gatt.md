@@ -565,6 +565,7 @@ Since -03:
   * frees up that bit in messages.
 
 * Add communication example.
+* Reference more open issues, including intention to get shorter IDs.
 
 Since -02:
 
