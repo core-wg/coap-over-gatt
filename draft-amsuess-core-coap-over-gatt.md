@@ -260,7 +260,7 @@ It should avoid sending multiple messages in the same connection event.
 
 To send a message reliably in terms of CoAP transmission,
 a sender sets its latest Message ID in the M bit, sets C to 1, and populates the remaining bits per the rules above.
-It thens ends the message reliably on the radio
+It then sends the message reliably on the radio
 (it may send unreliably if a message is expected from the peer soon, but then needs to be prepared to send the same message again).
 After sending that message,
 the sender does not send any other message until a message is received with A equal to the sent message's M bit.
