@@ -122,6 +122,9 @@ Several approaches were considered, but considered unsuitable for the intended u
   There is no clear path toward how that would be integrated in platforms like Android or iOS,
   and even if it were, creating a network connection to a nearby device from within an application might not be possible (if how WLAN networks are managed is any indication).
 
+  \[ TBD: Illustrate how easy IPSP is when only working link-local like CoAP-over-GATT does,
+  see also <https://gitlab.com/chrysn/coap-over-gatt/-/issues/10>. \]
+
 * GoldenGate {{goldengate}}:
   This introduces significant network overhead,
   and burdens the end user device application with shipping a full network stack
