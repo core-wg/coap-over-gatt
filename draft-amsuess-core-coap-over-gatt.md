@@ -258,7 +258,8 @@ a sender sets its latest Message ID in the M bit, sets C to 0, and populates the
 It then sends the message unreliably on the radio
 (it may be sent reliably, especially when the peer set the C bit before).
 After a CoAP-unreliable message, the sender may send more CoAP-unreliable messages.
-It should avoid sending multiple messages in the same connection event.
+It should avoid sending multiple messages in the same connection event
+(because the peer's BLE stack would be likely to not pass on the earlier message).
 
 To send a message reliably in terms of CoAP transmission,
 a sender sets its latest Message ID in the M bit, sets C to 1, and populates the remaining bits per the rules above.
