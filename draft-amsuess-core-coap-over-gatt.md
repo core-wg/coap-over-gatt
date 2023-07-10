@@ -391,6 +391,17 @@ and the server sends a reliable notification)
 
   Offset based fragmentation may also be incompatible with the write-with-response approach suggested for reliability.
 
+* Usability from WebBluetooth
+
+  WebBluetooth clients may be unaware that two protocol instances
+  are running between the client and the server at the same time,
+  without any indication on the BLE side.
+
+  Is there anything this protocol can do to help the clients discover
+  (or even resolve) the situation?
+
+  See also <https://gitlab.com/chrysn/coap-over-gatt/-/issues/9>.
+
 ## Addresses
 
 The URI scheme associated with CoAP over GATT is "coap+gatt".
