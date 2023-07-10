@@ -348,12 +348,12 @@ because they make it easy to send much data within a single BLE connection event
 
 The URI scheme associated with CoAP over GATT is "coap+gatt".
 The default value of Uri-Host is the MAC address of the CoAP server,
-in hexadecimal encoding, with the dash character ("-") separating the bytes.
+in hexadecimal encoding, followed by `.ble.arpa`.
 \[ Some bikeshedding is expected on these details. \]
 
 User information and port are always absent with this scheme.
 
-Assembling the URI of a request for the discovery resource of a BLE device with the MAC address 00:11:22:33:44:55 would thus be assembled, under the rules of {{Section 6.4 of RFC7252}}, to `coap+gatt://00-11-22-33-44-55/.well-known/core`.
+Assembling the URI of a request for the discovery resource of a BLE device with the MAC address 00:11:22:33:44:55 would thus be assembled, under the rules of {{Section 6.4 of RFC7252}}, to `coap+gatt://001122334455.ble.arpa/.well-known/core`.
 
 Locally defined host or service name registries may be used to create names
 that are more suitable for human interaction.
@@ -367,19 +367,12 @@ They may come up with an application-internal registered name component
 but must be aware that those can not be expressed towards anything outside the local stack --
 the same way they would avoid using IPv6 zone identifiers or URIs whose host name is `localhost`.
 
-
-### Scheme-free alternative
-
-As an alternative to the abovementioned scheme,
-a zone in .arpa could be registered to use addresses like
-
-~~~
-coap://001122334455.ble.arpa/.well-known/core
-~~~
-
-where the .ble.arpa address do not resolve to any IP addresses.
-
-\[ Accepting this will require a .arpa registering IANA consideration to replace the URI one. \]
+The interactions of different CoAP transports' schemes
+is discussed at length in {{?I-D.ietf-core-transport-indication}}.
+There is currently no intention
+to provide any DNS records for the `.ble.arpa` domain
+that would enable the use of `coap://001122334455.ble.arpa/` addresses.
+Local mechanisms may still enable their use.
 
 ### Use with persistent addresses
 
@@ -471,6 +464,18 @@ IANA is asked to enter a new scheme into the "Uniform Resource Identifier (URI) 
 * URI Scheme: "coap+gatt"
 * Description: CoAP over Bluetooth GATT (sharing the footnote of coap+tcp)
 * Well-Known URI Support: yes, analogous to {{RFC7252}}
+
+## ble.arpa, ble-sd.arpa
+
+IANA is asked to create two new reserved domain names in the .arpa name space as described in {{!rfc6761}}:
+the suffixes `.ble.arpa` and `.ble-sd.arpa`.
+
+The expectation for Application Software are
+that no DNS resolution is attempted;
+instead, the hexadecimal prefix is processed into a binary address
+(6 bytes for `.ble.arpa`, arbitrary lengths for `.ble-sd.arpa`),
+and any operation on that address is pointed to the Bluetooth Low Energy device
+with the indicated MAC address or Service Data, respectively.
 
 # Security considerations
 
