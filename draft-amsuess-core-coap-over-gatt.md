@@ -207,6 +207,10 @@ which are discovered by a BLE central (typically an end user device).
 The server and client roles of CoAP and GATT are independent of each other:
 either BLE participant can send requests in a CoAP client role.
 
+It is expected that as this document matures,
+shorter (16 or 32 bit) identifiers will be requested and assigned.
+\[ See also <https://gitlab.com/chrysn/coap-over-gatt/-/issues/7>. \]
+
 ### Message sub-layer
 
 At the UCU/UCD pair of CoAP-over-GATT characteristics, each party maintains a single bit Message ID (initialized at 1 when a connection is created),
