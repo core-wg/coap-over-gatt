@@ -1,0 +1,136 @@
+\documentclass[aspectratio=169,colorlinks]{beamer}
+\usetheme{Boadilla} % plainest one with slide number footer
+
+% generic packages
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{ulem}
+\usepackage{hyperref}
+
+% about the presentation
+\title{CoAP over GATT}
+\subtitle{\texttt{draft-amsuess-core-coap-over-gatt}}
+\author{Christian~Amsüss}
+\date{IETF117 San Francisco, CoRE, 2023-07-25}
+
+% used commands
+
+\usepackage{verbatim}
+
+\newcommand{\rfc}[1]{\href{https://datatracker.ietf.org/doc/html/rfc#1}{RFC~#1}}
+\newcommand{\ietfdraft}[1]{\href{https://datatracker.ietf.org/doc/draft-#1/}{draft #1}}
+
+% attach self
+
+\usepackage{embedfile}
+\embedfile{\jobname.tex}
+\embedfile{Makefile}
+
+\begin{document}
+
+\frame{\titlepage}
+
+% from 116 presentation
+\begin{frame}{For \texttt{-04}: More about discovery}\Large
+	\framesubtitle{A slide from IETF116}
+
+	\color{gray}
+
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\includegraphics[width=\textwidth]{pairing-old.png}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			What if we already know our peer\ldots
+
+			\bigskip
+
+			\ldots and there are many CoAP-over-GATT devices around?
+
+			\bigskip
+
+			``know'': by URI, by AS/audience, by advertised resources?
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Changes to \texttt{-04}}\Large
+	\begin{itemize}
+		\item Use two separate characteristics for inbound and outbound traffic.
+
+		  \bigskip
+
+		\item Define semantics of service data field in advertisement field.
+		  \bigskip
+		\item \texttt{coap+gatt://001122334455.ble.arpa/}
+
+		  \bigskip
+
+			\ldots \texttt{.arpa}?
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Why go with \texttt{.arpa}?}\Large
+	\begin{itemize}
+	  \item We already have two kinds of natural identifiers: BLE MACs (useful to some, unavailable toothers) and self-described names (transported in service data field)
+
+	    \normalsize
+
+	  \texttt{coap+gatt://001122334455.ble.arpa/}
+
+	  \texttt{coap+gatt://34373131.ble-sd.arpa/} (``arbitrary'' length, as unique as \texttt{.local})
+
+	\item \Large While \rfc{3986} leaves it open, practically there's only one structure on ``host names''.
+
+	  \normalsize
+
+	  Just being in that name space doesn't mean name resolution is involved.
+
+	\item \Large \texttt{coap+gatt://host.example.com/}, \texttt{coap://001122334455.ble.arpa/}?
+
+	  \normalsize
+
+	  Possible with "BLE" records (no intention to pursue) and \ietfdraft{transport-indication} draft (Proxy-Scheme but no Uri-Host, not anticipating much need for this on such links).
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{For further exploration, possibly in a later add-on}\Large
+	\framesubtitle{Based on a slide from IETF116}
+
+	\begin{itemize}
+		\color{gray}
+		\item Multicast by CoAP messages in beacons?
+		\item SCHC retconning of non-CoAP attributes. (``Turn the temperature into a CoAP addressable resource'').
+	\end{itemize}
+
+	\color{black}
+
+	\bigskip
+
+	Postponed until there is need for it.
+\end{frame}
+
+\begin{frame}{Roadmap}\Large
+	\framesubtitle{Unchanged since IETF116 -- but now with a more concrete address proposal}
+	\begin{itemize}
+		\item Update implementations, re-run tests.
+
+		\item Keep using CoAP-over-GATT as driver for \texttt{transport-indication}
+
+			(could also pick -over-WebSockets or \texttt{t2trg-slipmux})
+		\item Explore this in the WG?
+
+		  (Implementation report to arrive at one of the next interims)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Thanks}\Large
+	Comments?
+
+	\bigskip
+
+	Questions?
+\end{frame}
+
+\end{document}
