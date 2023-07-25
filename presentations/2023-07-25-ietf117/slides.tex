@@ -95,6 +95,30 @@
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{Why not \rfc{9039} \texttt{urn:dev:}?}\Large
+	\begin{itemize}
+		\item These are URIs for devices, not resources on devices.
+			\bigskip
+		\item URIs without authority component are inexpressible in CoAP options.
+			\bigskip
+			\normalsize
+
+			Can't express `GET urn:dev:mac:001122334455/.well-known/core` even if dev URNs allowed that (they don't).
+
+			\bigskip
+
+		\item \Large No clear way to use device URNs as host identifiers.
+			\bigskip
+
+			\normalsize
+
+			\texttt{coap+gatt://urn\%3adev\%3amac\%3a001122334455/}?
+			Possible, but escaping mess.
+
+			Might be prettier if \texttt{.arpa} domain were defined for the-host-identified-by-a-URI with clean mapping (but URIs are complex) -- \texttt{coap+gatt://001122334455.mac.dev.urn.arpa/} style only works for colon separated URN schemes with no dots in them ever.
+	\end{itemize}
+\end{frame}
+
 \begin{frame}{For further exploration, possibly in a later add-on}\Large
 	\framesubtitle{Based on a slide from IETF116}
 
