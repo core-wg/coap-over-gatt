@@ -414,7 +414,9 @@ and the server sends a reliable notification)
 The URI scheme associated with CoAP over GATT is "coap+gatt".
 The default value of Uri-Host is the MAC address of the CoAP server,
 in hexadecimal encoding, followed by `.ble.arpa`.
-\[ Some bikeshedding is expected on these details. \]
+[^arpa-alt]{:CA}
+
+[^arpa-alt]: The use of `.ble.alt` as defined in {{?RFC9476}} was considered instead of `.ble.arpa`, but rejected for lack of management of its subdomains. Language from the `.alt` specification may be used when it comes to describing how this is not disturbing DNS operations.
 
 User information and port are always absent with this scheme.
 
