@@ -555,6 +555,10 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since -04:
+
+* Point out .arpa / .alt considerations.
+
 Since -03:
 
 * Define semantics of service data field, define ble-sd.arpa for that purpose.
