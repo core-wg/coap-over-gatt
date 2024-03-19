@@ -571,6 +571,11 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since -05:
+
+* Use `coap://${MAC}.ble.arpa` instead of `coap+gatt://`.
+* Apply template to IANA considerations.
+
 Since -04:
 
 * Point out .arpa / .alt considerations.
