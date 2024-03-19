@@ -411,7 +411,8 @@ and the server sends a reliable notification)
 
 ## Addresses
 
-The URI scheme associated with CoAP over GATT is "coap+gatt".
+The URI scheme associated with CoAP over GATT is "coap"
+as per the recommendation of {{Section 6 of ?I-D.ietf-core-transport-indication}}.
 The default value of Uri-Host is the MAC address of the CoAP server,
 in hexadecimal encoding, followed by `.ble.arpa`.
 [^arpa-alt]{:CA}
@@ -420,7 +421,7 @@ in hexadecimal encoding, followed by `.ble.arpa`.
 
 User information and port are always absent with this scheme.
 
-Assembling the URI of a request for the discovery resource of a BLE device with the MAC address 00:11:22:33:44:55 would thus be assembled, under the rules of {{Section 6.4 of RFC7252}}, to `coap+gatt://001122334455.ble.arpa/.well-known/core`.
+Assembling the URI of a request for the discovery resource of a BLE device with the MAC address 00:11:22:33:44:55 would thus be assembled, under the rules of {{Section 6.4 of RFC7252}}, to `coap://001122334455.ble.arpa/.well-known/core`.
 
 Locally defined host or service name registries may be used to create names
 that are more suitable for human interaction.
@@ -430,16 +431,10 @@ no record types are registered that map to Bluetooth MAC addresses at the time o
 Note that on some platforms (e.g. Web Bluetooth {{webbluetooth}}),
 the peer's or the own address may not be known application.
 They may come up with an application-internal registered name component
-(e. g. `coap+gatt://id-SomeInternalIdentifier/.well-known/core`),
+(e. g. `coap://id-SomeInternalIdentifier.alt/.well-known/core`,
+in this case using the `.alt` zone from {{?RFC9476}}),
 but must be aware that those can not be expressed towards anything outside the local stack --
 the same way they would avoid using IPv6 zone identifiers or URIs whose host name is `localhost`.
-
-The interactions of different CoAP transports' schemes
-is discussed at length in {{?I-D.ietf-core-transport-indication}}.
-There is currently no intention
-to provide any DNS records for the `.ble.arpa` domain
-that would enable the use of `coap://001122334455.ble.arpa/` addresses.
-Local mechanisms may still enable their use.
 
 ### Use with persistent addresses
 
@@ -450,10 +445,8 @@ because they fluctuate on hardware changes.
 
 In the absence of a usable host or service name registry,
 implementers may opt for non-GATT addresses right away.
-{{?I-D.ietf-core-transport-indication}} provides the means to advertise a different canonical address,
-and to announce availability of that advertised service on the present transport, CoAP-over-GATT.
-If the device is not generally reachable,
-the canonical address might also be unreachable (see {{?I-D.ietf-core-transport-indication}} section "Unreachable canonical origin address").
+{{Section 2.4.1 of ?I-D.ietf-core-transport-indication}} provides the means to advertise a different canonical address,
+and to announce availability of that advertised service on the present transport.
 
 When long-lived addresses circumvent privacy preserving measures,
 considerations concering the tracking of devices \[ are TBD along the lines of "don't make it discoverable to unauthorized sources, and in case of doubt let the peer show its credentials first" \].
@@ -523,14 +516,6 @@ Two more uses of them are being considered:
   a mechanism such as {{?I-D.ietf-core-observe-multicast-notifications}} could be used to distribute some consensus request.
 
 # IANA considerations
-
-## Uniform Resource Identifier (URI) Schemes
-
-IANA is asked to enter a new scheme into the "Uniform Resource Identifier (URI) Schemes" registry set up in {{RFC7595}}:
-
-* URI Scheme: "coap+gatt"
-* Description: CoAP over Bluetooth GATT (sharing the footnote of coap+tcp)
-* Well-Known URI Support: yes, analogous to {{RFC7252}}
 
 ## ble.arpa, ble-sd.arpa
 
