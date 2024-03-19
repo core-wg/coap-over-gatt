@@ -529,6 +529,37 @@ instead, the hexadecimal prefix is processed into a binary address
 and any operation on that address is pointed to the Bluetooth Low Energy device
 with the indicated MAC address or Service Data, respectively.
 
+The Domain Reservation Considerations from {{Section 5 of ?RFC6761}} for both domains are:
+
+* Users:
+  Users are not expected to recognize those names as special, merely as distinct from other names.
+
+* Application Software:
+  Writers of application software are expected to pass them on to their CoAP implementation.
+  CoAP implementations are expected to recognize them as Bluetooth addresses,
+  and use their Bluetooth addresses
+  and MUST NOT pass them on to DNS based resolvers
+  (unless the API resolver happens to explicitly support resolution into BLE addresses, see below).
+
+* Name resolution APIs and libraries:
+  Name resolution APIs and libraries MAY indicate that .ble.arpa names resolve to the BLE MAC address literals encoded inside them
+  (but no details for this are specified in known resolution APIs or libraries).
+  Otherwise, they SHOULD report them as NXDOMAIN.
+
+* Caching DNS Servers:
+  Caching DNS servers MAY recognize the special domains and report them as NXDOMAIN.
+  Otherwise, they will cache the .arpa DNS servers' responses.
+
+* Authoritative DNS Servers:
+  Authoritative DNS servers MAY recognize the special domains and report them as NXDOMAIN.
+  Otherwise, they will cache the .arpa DNS servers' responses.
+
+* DNS Server Operators:
+  No impact on DNS server operators is expected.
+
+* DNS Registries/Registrars:
+  Any changes to .ble.arpa or .ble-sd.arpa go through updates to this document and IANA.
+
 # Security considerations
 
 All data received over GATT is considered untrusted;
