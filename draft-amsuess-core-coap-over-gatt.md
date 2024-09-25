@@ -347,7 +347,7 @@ This is similar to using RFC7252 with NSTART > 1,
 and may be used by the GATT client if the GATT server lists multiple pairs of UCU/UCD characteristics.
 The GATT server can send messages only through UCU characteristics on which the GATT client enabled "indicate" or "notify";
 if the GATT client does not support multiple characteristics,
-it will just pick any and only enable them on that one.
+it will just pick any pair, and only enable them on the pair's UCU.
 
 Each characteristic has its independent message ID bits.
 All characteristics of a service share a single token space,
@@ -357,6 +357,10 @@ The use of muliple characteristics is primarily practical
 when large amounts of data are to be transferred.
 These transfers can utilize much of BLE's bandwidth
 because they make it easy to send much data within a single BLE connection event.
+
+Implementers are encouraged to benchmark their applications
+and show that their throughput is limited by the number of characteristics used
+before supporting multiple characteristics.
 
 ### Communication example
 
