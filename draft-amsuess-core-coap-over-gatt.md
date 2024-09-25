@@ -244,7 +244,8 @@ The bits are set as follows:
 
 * The R bit is reserved for future extensions;
   it MUST be written as 0,
-  and writes with values of 1 MUST be ignored.
+  and when a value of 1 is written,
+  the whole written value MUST be ignored.
 
 * The Message ID bit is always set to the current Message ID of the sender.
 
