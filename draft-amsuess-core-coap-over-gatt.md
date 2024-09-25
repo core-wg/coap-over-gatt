@@ -256,6 +256,27 @@ The bits are set as follows:
 When receiving a message with the C bit set,
 the recipient MUST eventually send a response message with radio reliability.
 
+### Minimal use of the message sub-layer
+
+Unless an implementation sends fast bursts of updates or large quantities of data
+and tunes for their througput,
+it can use a simple subset of the message sub-layer functionality
+and still interoperate with any peer.
+
+Such an application needs to
+
+* always send reliably (i.e., use Write with Response and Inform)
+* set the Message ID to 0 on the first message it sends,
+* set the Confirm bit on every non-empty message it sends
+  (and leaves it unset on empty messages),
+* wait for the peer to send a message with Acknowledge matching the last Message ID it sent
+  before sending another non-empty message, and
+* always send an acknowledgement right after receiving a non-empty message with the Confirm bit set.
+
+This way,
+there is no need to keep track of whether the Confirm bit is strictly necessary,
+and whether more messages may be sent with the same message ID.
+
 ### Using the message sub-layer
 
 \[ This section reflects ongoing experimentation with the above serialization format and rules.
