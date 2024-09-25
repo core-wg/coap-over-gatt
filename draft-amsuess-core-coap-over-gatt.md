@@ -613,6 +613,13 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since -06:
+
+* Sketch usage example with EDHOC message 1 in beacons.
+* Restructured to group "further development" points together.
+* Discourage multi-characteristic operation unless necessary.
+* Minor clarifications.
+
 Since -05:
 
 * Use `coap://${MAC}.ble.arpa` instead of `coap+gatt://`.
