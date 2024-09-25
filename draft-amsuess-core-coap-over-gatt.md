@@ -159,7 +159,7 @@ CoAP-over-GATT has different properties than UDP transported over the Internet:
 * Messages sent by one party are received by the other party in the order in which they are sent.
   There is no re-ordering.
 
-  (There is also a total order on messages sent by any party,
+  (There is also a total order on all message exchanged between two peers,
   but that property is not useful because it's often not accessible through the Bluetooth stacks.)
 
 * There is limited reliabiliy built into the protocol.
