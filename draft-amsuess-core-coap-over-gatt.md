@@ -510,7 +510,21 @@ Two more uses of them are being considered:
 * Advertisements could contain broadcast CoAP messages.
 
   Given that these non-traditional responses can not have embedded requests (as defined in {{?I-D.bormann-core-responses}}) due to size contraints,
-  a mechanism such as {{?I-D.ietf-core-observe-multicast-notifications}} could be used to distribute some consensus request.
+  a mechanism such as {{?I-D.ietf-core-observe-multicast-notifications}} could be used to distribute some consensus request:
+  Devices would learn that there is a consensus multicast request,
+  and convey any response by sending BLE advertisements.
+
+  In some cases,
+  a consensus request may be global:
+  For example,
+  devices willing to participate in an {{?I-D.ietf-lake-authz}} mediated enrollment
+  would respond to a conensus request that is an empty POST to their /.well-known/edhoc resource.
+  A field in an advertisement "responding" to that may then contain an EDHOC message 1,
+  and receivers can attempt to process it without further radio traffic,
+  only establishing a GATT connection upon success.
+  The kind of request that elicited that response, as well as possibly some constant prefix
+  (fixed method or suites)
+  is encoded in the type of field (possibly a dedicated service with own service data).
 
 ## Protocol details
 
