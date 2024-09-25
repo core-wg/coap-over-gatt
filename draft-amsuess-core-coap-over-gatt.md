@@ -404,37 +404,6 @@ and the server sends a reliable notification)
 ~~~
 {: #fig-communication title="Example message flow"}
 
-### Development directions
-
-* Is there any good reason to allow read operations?
-
-  A GATT client that is waiting for a Confirm bit to be acknowledged might attempt a Read
-  (for the case that the confirmation arrived in an unreliable message),
-  but might just as well perform the last write again.
-
-  Reading would be more efficient (because it can happen without application intervention, and no data is sent),
-  but the added complexity might not be worth the enhancements.
-
-* Fragmentation.
-  If the current approach of requiring devices to support large MTU sizes turns out to be impractical,
-  or if GATT level fragmentation vastly outperforms CoAP fragmentation,
-  it may be necessary to use composite reads and writes on GATT.
-
-  Care has to be taken to use only operations supported by {{webbluetooth}}: that API does not expose reads with offsets.
-
-  Offset based fragmentation may also be incompatible with the write-with-response approach suggested for reliability.
-
-* Usability from WebBluetooth
-
-  WebBluetooth clients may be unaware that two protocol instances
-  are running between the client and the server at the same time,
-  without any indication on the BLE side.
-
-  Is there anything this protocol can do to help the clients discover
-  (or even resolve) the situation?
-
-  See also <https://gitlab.com/chrysn/coap-over-gatt/-/issues/9>.
-
 ## Addresses
 
 The URI scheme associated with CoAP over GATT is "coap"
@@ -476,6 +445,8 @@ and to announce availability of that advertised service on the present transport
 
 When long-lived addresses circumvent privacy preserving measures,
 considerations concering the tracking of devices \[ are TBD along the lines of "don't make it discoverable to unauthorized sources, and in case of doubt let the peer show its credentials first" \].
+
+# Further development
 
 ## Compression and reinterpretation of non-CoAP characteristics
 
@@ -540,6 +511,37 @@ Two more uses of them are being considered:
 
   Given that these non-traditional responses can not have embedded requests (as defined in {{?I-D.bormann-core-responses}}) due to size contraints,
   a mechanism such as {{?I-D.ietf-core-observe-multicast-notifications}} could be used to distribute some consensus request.
+
+## Protocol details
+
+* Is there any good reason to allow read operations?
+
+  A GATT client that is waiting for a Confirm bit to be acknowledged might attempt a Read
+  (for the case that the confirmation arrived in an unreliable message),
+  but might just as well perform the last write again.
+
+  Reading would be more efficient (because it can happen without application intervention, and no data is sent),
+  but the added complexity might not be worth the enhancements.
+
+* Fragmentation.
+  If the current approach of requiring devices to support large MTU sizes turns out to be impractical,
+  or if GATT level fragmentation vastly outperforms CoAP fragmentation,
+  it may be necessary to use composite reads and writes on GATT.
+
+  Care has to be taken to use only operations supported by {{webbluetooth}}: that API does not expose reads with offsets.
+
+  Offset based fragmentation may also be incompatible with the write-with-response approach suggested for reliability.
+
+* Usability from WebBluetooth
+
+  WebBluetooth clients may be unaware that two protocol instances
+  are running between the client and the server at the same time,
+  without any indication on the BLE side.
+
+  Is there anything this protocol can do to help the clients discover
+  (or even resolve) the situation?
+
+  See also <https://gitlab.com/chrysn/coap-over-gatt/-/issues/9>.
 
 # IANA considerations
 
