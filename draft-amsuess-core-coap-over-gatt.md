@@ -359,7 +359,8 @@ All characteristics of a service share a single token space,
 and responses need not necessarily be sent on the characteristic the request was sent on.
 
 The use of muliple characteristics is primarily practical
-when large amounts of data are to be transferred.
+when large amounts of data are to be transferred,
+or when low-latency notifications are required while simultaneously sending reliable messages.
 These transfers can utilize much of BLE's bandwidth
 because they make it easy to send much data within a single BLE connection event.
 
