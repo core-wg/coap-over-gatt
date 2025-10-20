@@ -312,6 +312,11 @@ CoAP-over-GATT participants MUST ignore a message arriving at a characteristic
 if it is identical to the one received previously in the same connection.
 (The first message is never ignored).
 
+Recipients MAY limit deduplication to the message up to and including the token.
+This has no practical impact on reliable transmission:
+If a sender desires one precise message to be sent, it will increment M, set C,
+and not send another message until A has matched M.
+
 Note that it is not possible to send two identical consecutive messages unreliably.
 When sending identical requests, the sender may vary the token.
 Sending identical responses generally is rarely significant, even with the generalized {{?I-D.bormann-core-responses}},
@@ -354,7 +359,8 @@ All characteristics of a service share a single token space,
 and responses need not necessarily be sent on the characteristic the request was sent on.
 
 The use of muliple characteristics is primarily practical
-when large amounts of data are to be transferred.
+when large amounts of data are to be transferred,
+or when low-latency notifications are required while simultaneously sending reliable messages.
 These transfers can utilize much of BLE's bandwidth
 because they make it easy to send much data within a single BLE connection event.
 
@@ -418,6 +424,11 @@ User information and port are always absent with this scheme.
 
 Assembling the URI of a request for the discovery resource of a BLE device with the MAC address 00:11:22:33:44:55 would thus be assembled, under the rules of {{Section 6.4 of RFC7252}}, to `coap://001122334455.ble.arpa/.well-known/core`.
 
+These addresses do not convey a particular version of CoAP-over-GATT
+(or, more generally, scheme of transporting CoAP over other Bluetooth mechanisms):
+When the referenced device is found, Bluetooth's discovery mechanisms are used,
+and discovering the service US indicates availability of CoAP-over-GATT as specified in this document.
+
 Locally defined host or service name registries may be used to create names
 that are more suitable for human interaction.
 For DNS, which is widely used for this purpose,
@@ -475,26 +486,23 @@ Any required information about the application can be expressed in the SCHC cont
 In the current specification,
 advertisements are used to indicate that CoAP-over-GATT is being used.
 
-If Service Data is transported in the advertisement,
-it contains an identifier of the device in the `ble-sd.arpa` zone,
-such that the lower case hexadecimal representation of the Service Data value is prepended to `.ble-sd.arpa`
-to form a name for the device.
-There is no expectation for these names to be globally unique:
-considerations for beacon lengths may require them to be as short as 2 bytes.
-They are local alias names,
-comparable to `hostname.local`,
-that help applications filter devices
-rather than establishing a connection with several devices
-just to find the intended one.
+Possible extensions include:
 
-The use of Service Data names has two upsides compared to filtering by MAC address:
+* Additional data can be used to identify the device.
 
-* Service Data identifiers can be stable across changes in hardware.
-* Service Data identifiers can be queried even on platforms
-  on which MAC addresses are not accessible,
-  such as on Web Bluetooth.
+  Suitable fields are Service Data (currently unavailable in the Web Bluetooth implementation)
+  and Manufacturer Data (requires a registered Company Identifier of a SIG member; available in the Web Bluetooth implementation).
 
-Two more uses of them are being considered:
+  Those can allow quick selection of a device to contact
+  even when selection by MAC address is unavailable (as are .
+
+  These identifiers can also form a suitable host component
+  through a manufacturer specific (Manufacturer Data)
+  or to-be-defined (Service Data) mechanism.
+
+  Service Data is currently not a practical attribute,
+  both because it is not implemented in any web browser,
+  and because it practically requires a 16-bit UUID as the US (otherwise it exceeds available space).
 
 * Some resource metadata might already be transported in advertisements.
 
@@ -502,10 +510,6 @@ Two more uses of them are being considered:
   and could contain data otherwise only discovered by querying the .well-known/core resource,
   or (hashes of) AS and audience values for ACE
   to facilitate connection creation with a device known by its managed identity.
-
-  \[ This is largely superseded by Service Data identifiers:
-  The level of per deployment customization for what would and would not be hashed
-  is likely so large that there would not be any interoperability exceeding plain identifiers anyway. \]
 
 * Advertisements could contain broadcast CoAP messages.
 
@@ -559,17 +563,16 @@ Two more uses of them are being considered:
 
 # IANA considerations
 
-## ble.arpa, ble-sd.arpa
+## ble.arpa
 
 IANA is asked to create two new reserved domain names in the .arpa name space as described in {{!rfc6761}}:
-the suffixes `.ble.arpa` and `.ble-sd.arpa`.
+the suffixes `.ble.arpa`.
 
 The expectation for Application Software are
 that no DNS resolution is attempted;
-instead, the hexadecimal prefix is processed into a binary address
-(6 bytes for `.ble.arpa`, arbitrary lengths for `.ble-sd.arpa`),
+instead, the hexadecimal prefix is processed into a 6-byte binary address,
 and any operation on that address is pointed to the Bluetooth Low Energy device
-with the indicated MAC address or Service Data, respectively.
+with the indicated MAC address.
 
 The Domain Reservation Considerations from {{Section 5 of ?RFC6761}} for both domains are:
 
