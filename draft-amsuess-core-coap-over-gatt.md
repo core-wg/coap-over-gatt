@@ -424,6 +424,11 @@ User information and port are always absent with this scheme.
 
 Assembling the URI of a request for the discovery resource of a BLE device with the MAC address 00:11:22:33:44:55 would thus be assembled, under the rules of {{Section 6.4 of RFC7252}}, to `coap://001122334455.ble.arpa/.well-known/core`.
 
+These addresses do not convey a particular version of CoAP-over-GATT
+(or, more generally, scheme of transporting CoAP over other Bluetooth mechanisms):
+When the referenced device is found, Bluetooth's discovery mechanisms are used,
+and discovering the service US indicates availability of CoAP-over-GATT as specified in this document.
+
 Locally defined host or service name registries may be used to create names
 that are more suitable for human interaction.
 For DNS, which is widely used for this purpose,
