@@ -616,6 +616,18 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since -07:
+
+* Removed ble-sd.arpa and demoted other Service Data use.
+
+  Service Data is currently not available in Web Bluetooth implementations.
+
+* Limited message deduplication to the header.
+
+  This makes the protocol implementable on constrained devices without a doubled buffer.
+
+* Small additions around multiple characteristics and discovery interaction with addressing.
+
 Since -06:
 
 * Sketch usage example with EDHOC message 1 in beacons.
