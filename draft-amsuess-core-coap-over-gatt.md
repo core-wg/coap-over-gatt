@@ -312,6 +312,11 @@ CoAP-over-GATT participants MUST ignore a message arriving at a characteristic
 if it is identical to the one received previously in the same connection.
 (The first message is never ignored).
 
+Recipients MAY limit deduplication to the message up to and including the token.
+This has no practical impact on reliable transmission:
+If a sender desires one precise message to be sent, it will increment M, set C,
+and not send another message until A has matched M.
+
 Note that it is not possible to send two identical consecutive messages unreliably.
 When sending identical requests, the sender may vary the token.
 Sending identical responses generally is rarely significant, even with the generalized {{?I-D.bormann-core-responses}},
