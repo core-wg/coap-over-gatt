@@ -1,0 +1,154 @@
+\input{shared/ietf-slides.tex}
+
+\title{CoAP over GATT}
+\subtitle{(Bluetooth Low Energy Generic Attributes)\\
+\ietfdraft{amsuess-core-coap-over-gatt-08}}
+\author{Christian~Amsüss}
+\date{2025-11-07, CoRE at IETF124}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Why?}
+  \framesubtitle{Flashback almost exactly 5 years ago}
+  \large
+  All the same reasons as for CoAP-over-WS
+
+  \bigskip
+
+  \begin{itemize}
+    \item Extend CoAP, especially OSCORE, to applications with limited APIs
+
+      \bigskip
+
+      “Smart” phone apps, browsers\footnote{Not generally approved; future versions on future protocols (WebRTC data channel?).}
+
+      \bigskip
+
+    \item \sout{Too lazy to implement IPSP}
+
+    \bigskip
+
+    \item \sout{But with IPSP I'll have to have a full IP stack}
+
+    \bigskip
+
+    \item Explain non-CoAP GATT values to CoAP devices through SCHC\Huge?
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Why…}\large
+  \framesubtitle{… even do non-IP transport for IETF protocol?}
+
+\vspace{-1cm}
+\begin{verbatim}
+                                         +----------------+
+                                         | CoAP-over-UDP  |
+    +----------------+                   +----------------+
+    | CoAP-over-GATT |                   |      IPv6      |
+    |----------------|                   |----------------|
+    |      GATT      | \ widely          | 6LoWPAN f. BLE |
+    |----------------| | accessible      |----------------|
+    |     L2CAP      | | to users        |     L2CAP      |
+    |----------------| | (even from      |----------------|
+    |      BLE       | / Chrome)         |      BLE       |
+    +----------------+                   +----------------+
+    
+      CoAP-over-GATT                         BLE IPSP
+\end{verbatim}
+
+\large Same reasons as for CoAP-over-WebSockets: Can't escape limited APIs.
+
+\end{frame}
+
+\begin{frame}{Why? \textit{2025 Edition.}}
+  \large
+  All the same reasons as for CoAP-over-WS
+
+  \bigskip
+
+  \begin{itemize}
+    \item Extend CoAP, especially \textit{all of EDHOC/OSCORE}, to applications with limited APIs
+
+      \bigskip
+
+      “Smart” phone apps, browsers\footnote{\textit{Still Chrome-only; small movement at Mozilla, no known activity for higher-level BLE interface.}}
+
+      \bigskip
+
+    \item \sout{Too lazy to implement IPSP}
+
+      \textit{\ldots and if the alternative is custom GATT, I'd rather take CoAP-over-non-IP.}
+
+    \bigskip
+
+    \item \sout{But with IPSP I'll have to have a full IP stack}
+
+      \textit{\ldots and sometimes options are limited by power over efficient BLE modules.}
+
+    \bigskip
+
+  \item \sout{Explain non-CoAP GATT values to CoAP devices through SCHC}
+
+    \textit{\ldots is still around as an idea, but not so charming without OSCORE.}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Capabilities}\Large
+  \framesubtitle{Similar to CoAP-over-UDP}
+  \begin{itemize}
+    \item Requests and responses in either direction
+    \item Concurrent requests (using tokens)
+    \item Non-traditional responses (no special-casing needed)
+    \item Reliable and unreliable transport
+    \item Optional message deduplication
+    \item Implicit flow control
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Methods}\Large
+  \framesubtitle{Diverging from -UDP due to different lower-layer guarantees\footnote{Reliable transmission, total order}}
+  \begin{itemize}
+    \item \texttt{M}-bit is single-bit message ID equivalent
+    \item \texttt{C}-bit requests confirmation
+    \item \texttt{A}-bit mirrors last \texttt{C} message's \texttt{M}-bit
+    \item No timer used: GATT's reliability mechanism suffice
+  \end{itemize}
+
+\bigskip
+
+\large
+  \begin{verbatim}
+0   1   2   3   4       8       16      varying
++---+---+---+---+-------+-------+-------+---------+----+---------+
+| R | M | C | A |  TKL  |  Code | Token | Options | ff | Payload |
++---+---+---+---+-------+-------+-------+---------+----+---------+
+  \end{verbatim}
+
+\end{frame}
+
+\begin{frame}{Implementation experience}\Large
+  \begin{itemize}
+    \item Student project at RIOT OS, implements \texttt{-07}
+
+      Embedded device at both sides. Found difficulties, led to \texttt{-08}.
+
+      \bigskip
+
+    \item Part of CoAP/ACE-OAuth PoC demo, being updated to \texttt{-08}
+
+      Device mimicking industrial control device without other network;
+      technician connects with browser (PWA), authenticates using ACE/EDHOC profile and reconfigures.
+  \end{itemize}
+\end{frame}
+
+% maybe app flows -- phone-to-isolated-device, phone-to-proxy, device-out-through-phone (E2E, RD reg); NIPC
+
+\begin{frame}{State}\Huge
+  Interest from the WG?
+\end{frame}
+
+\end{document}

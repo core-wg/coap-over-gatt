@@ -1,3 +1,6 @@
 [submodule "lib"]
 	path = lib
 	url = https://github.com/martinthomson/i-d-template
+[submodule "presentations/2025-11-07-ietf124/shared"]
+	path = presentations/2025-11-07-ietf124/shared
+	url = https://codeberg.org/chrysn/presentation-shared
