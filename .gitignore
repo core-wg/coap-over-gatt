@@ -1,11 +1,13 @@
 *~
 /*-[0-9][0-9].xml
 archive.json
-draft-amsuess-core-coap-over-gatt.xml
+draft-ietf-core-coap-over-gatt.xml
 Gemfile.lock
 /.gems/
 *.html
+/.idea/
 /lib
+/.*.mk
 /node_modules/
 package-lock.json
 *.pdf
@@ -14,7 +16,6 @@ package-lock.json
 report.xml
 *.swp
 .tags
-/.targets.mk
 *.txt
 *.upload
 /.venv/
