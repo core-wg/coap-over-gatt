@@ -1,6 +1,6 @@
 ---
 title: "CoAP over GATT (Bluetooth Low Energy Generic Attributes)"
-docname: draft-amsuess-core-coap-over-gatt-latest
+docname: draft-ietf-core-coap-over-gatt-latest
 ipr: trust200902
 stand_alone: true
 cat: std
