@@ -616,6 +616,10 @@ Physical proximity can not be inferred from this means of communication.
 
 # Change log
 
+Since draft-amsuess-core-coap-over-gatt-08:
+
+* Unmodified re-upload as adopted document.
+
 Since -07:
 
 * Removed ble-sd.arpa and demoted other Service Data use.
